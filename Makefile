@@ -23,7 +23,9 @@ else
 	DEBUG_CFLAGS = $(DEBUG_FLAGS)
 endif
 
-all: $(TEST) $(LIB) $(OBJ)/echo
+CXXFLAGS = -std=c++11
+
+all: $(TEST) $(LIB) $(OBJ)/echo $(OBJ)/echocpp
 lib: $(LIB)
 
 test: $(TEST)
@@ -32,11 +34,17 @@ test: $(TEST)
 echo: $(OBJ)/echo
 	$(OBJ)/echo
 
+echocpp: $(OBJ)/echocpp
+	$(OBJ)/echocpp
+
 $(TEST): $(LIB) $(TST_FILES) munit/munit.c
 	$(CC) $(CFLAGS) $(DEBUG_CFLAGS) -o $@ $^
 
 $(OBJ)/echo: $(LIB) examples/echo.c
 	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJ)/echocpp: $(LIB) examples/echo.cpp
+	$(CXX) $(CXXFLAGS) $(CFLAGS) -o $@ $^
 
 $(LIB): $(OBJ_FILES)
 	@mkdir -p $(OBJ)
@@ -47,7 +55,7 @@ $(OBJ)/%.o: %.c $(HDR_FILES)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 compile_commands: 
-	bear -- make clean $(TEST) CC=cc AR=ar
+	bear -- make clean all CC=cc AR=ar
 
 clean:
 	rm -rf $(OBJ) 

@@ -421,4 +421,97 @@ int code_stream_pop(code_stream_t *self, code_t *code);
 
 #if defined(__cplusplus)
 }
+
+class Param {
+public:
+  param_t param;
+
+  Param(char param, uint8_t val) : param(init_param_u8(param, val)) {}
+  Param(char param, int8_t val) : param(init_param_i8(param, val)) {}
+  Param(char param, int16_t val) : param(init_param_i16(param, val)) {}
+  Param(char param, int32_t val) : param(init_param_i32(param, val)) {}
+  Param(char param, int64_t val) : param(init_param_i64(param, val)) {}
+  Param(char param, float val) : param(init_param_f32(param, val)) {}
+  Param(char param, double val) : param(init_param_f64(param, val)) {}
+  Param(char param, char *val) : param(init_param_str(param, val)) {}
+
+  Param(Param &&other) : param(other.param) {
+    other.param.str = nullptr;
+    other.param.param = 0;
+  }
+  Param(Param &other) = delete;
+
+  ~Param() { free_param(&this->param); }
+
+  uint8_t cast_u8() const { return param_cast_u8(&this->param); }
+  int8_t cast_i8() const { return param_cast_i8(&this->param); }
+  int16_t cast_i16() const { return param_cast_i16(&this->param); }
+  int32_t cast_i32() const { return param_cast_i32(&this->param); }
+  int64_t cast_i64() const { return param_cast_i64(&this->param); }
+  float cast_f32() const { return param_cast_f32(&this->param); }
+  double cast_f64() const { return param_cast_f64(&this->param); }
+
+  char letter() const { return param_letter(&this->param); }
+};
+
+class Code {
+public:
+  code_t code;
+
+  Code(code_t &&code) : code(code) {
+    code.params = nullptr;
+    code.category = 0;
+    code.number = 0;
+  }
+  Code(char letter, uint8_t number, size_t num_params)
+      : code(init_code(letter, number, num_params)) {}
+  Code(Code &&other) : code(other.code) {
+    other.code.params = nullptr;
+    other.code.category = 0;
+    other.code.number = 0;
+  }
+  Code(Code &other) = delete;
+
+  ~Code() { free_code(&this->code); }
+
+  int dump_binary(char *buf, size_t len) const {
+    return code_dump_binary(&this->code, buf, len);
+  }
+
+  int dump_human(char *buf, size_t len) const {
+    return code_dump_human(&this->code, buf, len);
+  }
+
+  char letter() const { return code_letter(&this->code); }
+  bool is_binary() const { return code_is_binary(&this->code); }
+};
+
+class CodeStream {
+public:
+  code_stream_t code_stream;
+
+  CodeStream(code_stream_t &&code_stream) : code_stream(code_stream) {
+    code_stream.end = 0;
+    code_stream.pos = 0;
+    code_stream.cap = 0;
+    code_stream.buf = nullptr;
+  }
+  CodeStream(size_t capacity) : code_stream(init_code_stream(capacity)) {}
+  CodeStream(CodeStream &&other) : code_stream(other.code_stream) {
+    other.code_stream.buf = nullptr;
+    other.code_stream.cap = 0;
+    other.code_stream.pos = 0;
+    other.code_stream.end = 0;
+  }
+  CodeStream(CodeStream &other) = delete;
+
+  ~CodeStream() { free_code_stream(&this->code_stream); }
+
+  void update(const char *buf, size_t len) {
+    code_stream_update(&this->code_stream, buf, len);
+  }
+
+  int pop(code_t *code) { return code_stream_pop(&this->code_stream, code); }
+};
+
 #endif
