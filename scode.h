@@ -426,6 +426,12 @@ class Param {
 public:
   param_t param;
 
+  Param() : param({0}) {}
+  Param(param_t &&other) : param(other) {
+    other.str = nullptr;
+    other.param = 0;
+  }
+
   Param(char param, uint8_t val) : param(init_param_u8(param, val)) {}
   Param(char param, int8_t val) : param(init_param_i8(param, val)) {}
   Param(char param, int16_t val) : param(init_param_i16(param, val)) {}
@@ -458,6 +464,7 @@ class Code {
 public:
   code_t code;
 
+  Code() : code({0}) {}
   Code(code_t &&code) : code(code) {
     code.params = nullptr;
     code.category = 0;
@@ -490,6 +497,7 @@ class CodeStream {
 public:
   code_stream_t code_stream;
 
+  CodeStream() : code_stream({0}) {}
   CodeStream(code_stream_t &&code_stream) : code_stream(code_stream) {
     code_stream.end = 0;
     code_stream.pos = 0;
