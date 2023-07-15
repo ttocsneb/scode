@@ -169,7 +169,7 @@ param_t init_param_f64(char param, double val) {
   return p;
 }
 
-param_t init_param_str(char param, char *val) {
+param_t init_param_str(char param, const char *val) {
   param_t p;
   p.param = (param & 0b00011111) | (PARAM_T_STR << 5);
   p.str = malloc(strlen(val) + 1);

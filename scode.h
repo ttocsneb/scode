@@ -201,7 +201,7 @@ param_t init_param_f64(char param, double val);
  *
  * @return initialized parameter
  */
-param_t init_param_str(char param, char *val);
+param_t init_param_str(char param, const char *val);
 
 /**
  * Cast the value into a u8
@@ -439,7 +439,7 @@ public:
   Param(char param, int64_t val) : param(init_param_i64(param, val)) {}
   Param(char param, float val) : param(init_param_f32(param, val)) {}
   Param(char param, double val) : param(init_param_f64(param, val)) {}
-  Param(char param, char *val) : param(init_param_str(param, val)) {}
+  Param(char param, const char *val) : param(init_param_str(param, val)) {}
 
   Param(Param &&other) : param(other.param) {
     other.param.str = nullptr;
@@ -458,6 +458,11 @@ public:
   double cast_f64() const { return param_cast_f64(&this->param); }
 
   char letter() const { return param_letter(&this->param); }
+
+  param_t *replace() {
+    free_param(&this->param);
+    return &this->param;
+  }
 };
 
 class Code {
@@ -491,6 +496,17 @@ public:
 
   char letter() const { return code_letter(&this->code); }
   bool is_binary() const { return code_is_binary(&this->code); }
+
+  void set_param(size_t i, Param &&param) {
+    code.params[i] = param.param;
+    param.param.str = nullptr;
+    param.param.param = 0;
+  }
+
+  code_t *replace() {
+    free_code(&this->code);
+    return &this->code;
+  }
 };
 
 class CodeStream {
