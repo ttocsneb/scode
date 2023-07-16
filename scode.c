@@ -539,8 +539,9 @@ code_t init_code(char letter, uint8_t number, size_t num_params) {
   if (num_params == 0) {
     self.params = NULL;
   } else {
-    self.params = malloc(sizeof(code_t) * (num_params + 1));
-    memset(&self.params[num_params], 0, sizeof(code_t));
+    self.params = malloc(sizeof(param_t) * (num_params + 1));
+    self.params[num_params].param = 0;
+    self.params[num_params].str = NULL;
   }
   return self;
 }
@@ -738,7 +739,8 @@ int code_parse(code_t *self, const char *buf, size_t len) {
       free(temp);
       i++;
     }
-    memset(&param_arr[params_len], 0, sizeof(param_t));
+    param_arr[params_len].param = 0;
+    param_arr[params_len].str = NULL;
   }
   self->params = param_arr;
 
