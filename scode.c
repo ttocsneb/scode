@@ -588,6 +588,9 @@ int code_parse_args_human(struct param_list **params, size_t *param_len,
       if (next == '\n') {
         break;
       }
+      if (next == '\r') {
+        break;
+      }
       continue;
     }
     param_t param;
@@ -649,7 +652,7 @@ int code_parse(code_t *self, const char *buf, size_t len) {
   size_t params_len = 0;
 
   while (pos < len) {
-    if (!isspace(buf[pos]) || buf[pos] == '\n') {
+    if (!isspace(buf[pos]) || buf[pos] == '\n' || buf[pos] == '\r') {
       break;
     }
     pos++;
@@ -693,7 +696,7 @@ int code_parse(code_t *self, const char *buf, size_t len) {
     for (size_t i = pos; i < len; ++i) {
       if (buf[i] == ';' && comment > i) {
         comment = i;
-      } else if (buf[i] == '\n') {
+      } else if (buf[i] == '\n' || buf[i] == '\r') {
         eol = i + 1;
         eoc = i;
         break;
@@ -774,7 +777,9 @@ int code_dump_human(const code_t *self, char *buf, size_t len) {
     BUF_SET(buf, len, pos, ' ');
     pos++;
   }
-  buf[pos - 1] = '\n';
+  buf[pos - 1] = '\r';
+  BUF_SET(buf, len, pos, '\n');
+  pos++;
   buf[pos] = '\0';
   return pos;
 }
@@ -858,6 +863,9 @@ int code_stream_pop(code_stream_t *self, code_t *code) {
         }
         break;
       }
+      if (c == '\r') {
+        break;
+      }
       if (c == '\n') {
         break;
       }
@@ -880,6 +888,9 @@ int code_stream_pop(code_stream_t *self, code_t *code) {
     while (self->pos < self->end) {
       char c = self->buf[self->pos++];
       if (c == '\n') {
+        break;
+      }
+      if (c == '\r') {
         break;
       }
     }
