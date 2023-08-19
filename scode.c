@@ -290,7 +290,7 @@ int parse_string(param_t *self, const char *buf, size_t len) {
 }
 
 int parse_number(param_t *self, const char *buf, size_t len) {
-  int pos = 0;
+  size_t pos = 0;
   int is_negative = BUF_AT(buf, len, 0) == '-';
   if (is_negative) {
     pos++;
@@ -471,7 +471,7 @@ int param_dump_human(const param_t *self, char *buf, size_t len) {
     size_t length = strlen(self->str);
     int contains_single_quote = 0;
     int contains_double_quote = 0;
-    for (int i = 0; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
       if (self->str[i] == '\'') {
         contains_single_quote = 1;
       }
@@ -751,7 +751,7 @@ int code_parse(code_t *self, const char *buf, size_t len) {
 }
 
 int code_dump_binary(const code_t *self, char *buf, size_t len) {
-  int pos = 0;
+  size_t pos = 0;
   param_t start = init_param_u8(self->category, self->number);
   pos += UNWRAP(param_dump_binary(&start, buf, len));
   for (int i = 0; self->params != NULL && self->params[i].param != 0; ++i) {
@@ -767,7 +767,7 @@ int code_dump_binary(const code_t *self, char *buf, size_t len) {
 }
 
 int code_dump_human(const code_t *self, char *buf, size_t len) {
-  int pos = 0;
+  size_t pos = 0;
   param_t start = init_param_u8(self->category, self->number);
   pos += UNWRAP(param_dump_human(&start, buf, len));
   BUF_SET(buf, len, pos, ' ');
