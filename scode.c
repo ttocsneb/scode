@@ -424,7 +424,7 @@ int param_dump_binary(const param_t *self, char *buf, size_t len) {
     return 9;
   case PARAM_T_STR: {
     uint8_t length = (uint8_t)strlen(self->str);
-    BUF_ASSERT_LEN(len, length + 2);
+    BUF_ASSERT_LEN(len, (size_t)length + 2);
     memcpy(&buf[1], self->str, length);
     buf[1 + length] = '\0';
     return length + 2;
